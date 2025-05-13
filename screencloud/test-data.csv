@@ -1,0 +1,2 @@
+drone_id,timestamp,eventType,status,telemetryData
+drone123,2025-05-13T10:00:00Z,test,test,test

@@ -8,7 +8,6 @@ export class ScreencloudStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    // DynamoDB table for storing drone telemetry data
     const telemetryTable = new dynamodb.Table(this, 'DroneTelemetryTable', {
       partitionKey: { name: 'droneId', type: dynamodb.AttributeType.STRING },
       sortKey: { name: 'timestamp', type: dynamodb.AttributeType.NUMBER },
