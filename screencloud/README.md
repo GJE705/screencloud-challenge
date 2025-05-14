@@ -1,31 +1,67 @@
-# Screencloud telemetry challenge
-o A brief overview of your solution design.
+# Screencloud Telemetry Challenge
 
+## Solution Overview
 
-initial plan lambda to handle parsing the data 
+This project implements a serverless application using AWS Lambda and DynamoDB to manage drone telemetry data. The solution focuses on efficient data processing and storage while maintaining scalability and reliability.
 
-- update can handle parsing transforming and storage in one lambda
+### Architecture Flow
 
-- thoughts: step functions would be a suitable solution here
+1. Drone events trigger a Lambda function
+2. The Lambda function:
+   - Validates incoming drone data
+   - Processes and transforms it into JSON format
+3. Valid rows are stored in the dynamoDB table and can be quried quickly 
 
+### Technical Stack
 
+- **Architecture:** AWS Serverless
+- **Language:** TypeScript
+- **Database:** DynamoDB
+- **Local Development:** Docker
+- **Testing:** Test-Driven Development (TDD) approach
+- **Infrastructure:** AWS CDK
 
-o Explanation of your key choices (architecture, language/framework, database, schema, IaC/container approach, testing strategy).
+## Getting Started
 
-Typescript with AWS 
+### Prerequisites
 
+- Node.js and npm installed
+- Docker installed (for local DynamoDB)
+- AWS CLI configured (for deployment)
 
-## Instructions on how to install dependencies, configure (if needed), run the application locally, and run the tests.
+### Installation and Setup
 
-* `npm run build`   compile typescript to js
-* `npm run watch`   watch for changes and compile
-* `npm run test`    perform the jest unit tests
-* `npx cdk deploy`  deploy this stack to your default AWS account/region
-* `npx cdk diff`    compare deployed stack with current state
-* `npx cdk synth`   emits the synthesized CloudFormation template
-* `npm i `   install the dependencies 
-* `docker compose up` start the dynamoDb docker container
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
 
+2. Start local DynamoDB:
+   ```bash
+   docker compose up
+   ```
 
-## Any assumptions made or challenges encountered
-Challenges encountered, i wanted to implement dynamo db i had set this up using a docker container however experienced issues when tyring to get the process lambda to run tests against the local container, i spent too much time on this and lost  
+### Available Commands
+
+| Command | Description |
+|---------|-------------|
+| `npm run build` | Compile TypeScript to JavaScript |
+| `npm run watch` | Watch for changes and recompile |
+| `npm run test` | Run Jest unit tests |
+| `npx cdk deploy` | Deploy stack to AWS |
+| `npx cdk diff` | Compare deployed stack with current state |
+| `npx cdk synth` | Generate CloudFormation template |
+
+## Development Notes
+
+### Design Considerations
+
+While AWS Step Functions was initially considered as a potential solution, the decision was made to focus on Lambda functions due to my experience and simplicity of implementation.
+
+### Challenges and Learnings
+
+The main challenge encountered was setting up DynamoDB for local development:
+- Successfully configured local DynamoDB using Docker
+- Faced difficulties integrating the process Lambda with the local DynamoDB container for testing
+- In retrospect, while DynamoDB remains the ideal choice for this use case, using a familiar relational database like PostgreSQL might have accelerated initial development   
+- I pivoted form connecting to the docker container to mocking th Dynamo db instance using aws-sdk-mock library here https://github.com/dwyl/aws-sdk-mock/blob/main/README.md 

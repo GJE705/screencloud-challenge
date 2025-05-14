@@ -28,6 +28,16 @@ export function validateTelemetryData(data: TelemetryData): boolean {
     return false;
   }
 
+  if(data.eventType !== 'FLIGHT' && data.eventType !== 'LANDING' && data.eventType !== 'LANDED' && data.eventType !== 'WARNING') {
+    console.log('Invalid eventType');
+    return false; 
+  }
+  
+  if (data.status !== 'ACTIVE' && data.status !== 'INACTIVE') {
+    console.log('Invalid status');
+    return false;
+  }
+
   return true;
 }
 
