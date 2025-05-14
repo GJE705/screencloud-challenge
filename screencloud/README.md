@@ -41,6 +41,16 @@ This project implements a serverless application using AWS Lambda and DynamoDB t
    docker compose up
    ```
 
+3. Run setup local dynamo db script
+   ```bash
+    npx ts-node scripts/setup-local-dynamodb.ts
+   ```
+
+4. Run generate test data script
+   ```bash
+    npx ts-node scripts/generate-test-data.ts
+   ```
+
 ### Available Commands
 
 | Command | Description |

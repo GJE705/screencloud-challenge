@@ -18,7 +18,11 @@ for (let i = 0; i < 100; i++) {
         droneId,
         timestamp,
         eventType,
-        status
+        status,
+        telemetryData: {
+            batteryLevel: Math.floor(Math.random() * 101), // Random battery level between 0 and 100
+            location: "belfast" // Random location
+        }
     });
 }
 
