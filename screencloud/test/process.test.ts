@@ -32,8 +32,8 @@ describe('processTelemetry', () => {
         const testData = {
             droneId: '12345678',
             timestamp: 1633072800,
-            eventType: 'telemetry',
-            status: 'active',
+            eventType: 'WARNING',
+            status: 'ACTIVE',
             telemetryData: {
                 batteryLevel: 85,
                 location: 'belfast'
