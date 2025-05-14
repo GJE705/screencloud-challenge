@@ -1,10 +1,21 @@
-# Welcome to your CDK TypeScript project
+# Screencloud telemetry challenge
+o A brief overview of your solution design.
 
-This is a blank project for CDK development with TypeScript.
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+initial plan lambda to handle parsing the data 
 
-## Useful commands
+- update can handle parsing transforming and storage in one lambda
+
+- thoughts: step functions would be a suitable solution here
+
+
+
+o Explanation of your key choices (architecture, language/framework, database, schema, IaC/container approach, testing strategy).
+
+Typescript with AWS 
+
+
+## Instructions on how to install dependencies, configure (if needed), run the application locally, and run the tests.
 
 * `npm run build`   compile typescript to js
 * `npm run watch`   watch for changes and compile
@@ -13,21 +24,8 @@ The `cdk.json` file tells the CDK Toolkit how to execute your app.
 * `npx cdk diff`    compare deployed stack with current state
 * `npx cdk synth`   emits the synthesized CloudFormation template
 * `npm i `   install the dependencies 
+* `docker compose up` start the dynamoDb docker container
 
 
-
-
-initial plan lambda for each of the incoming data actions
-
-- update can handle parsing transforming and storage in one lambda
-
-- thoughts: step functions would be a suitable solution here
-
-
-A README file detailing:
-o A brief overview of your solution design.
-o Explanation of your key choices (architecture, language/framework,
-database, schema, IaC/container approach, testing strategy).
-o Clear instructions on how to install dependencies, configure (if needed), run
-the application locally, and run the tests.
-o Any assumptions made or challenges encountered.
+## Any assumptions made or challenges encountered
+Challenges encountered, i wanted to implement dynamo db i had set this up using a docker container however experienced issues when tyring to get the process lambda to run tests against the local container, i spent too much time on this and lost  

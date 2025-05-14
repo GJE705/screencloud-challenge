@@ -1,105 +1,77 @@
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocumentClient, PutCommand } from '@aws-sdk/lib-dynamodb';
-import { Context } from 'aws-lambda';
-import { parse } from 'csv-parse/sync';
-import * as fs from 'fs';
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { TelemetryData } from '../types';
 import { validateTelemetryData, validateTelemetryDataTypes } from '../validation';
+import AWS from 'aws-sdk';
 
-const ddbClient = new DynamoDBClient({
+// Configure DynamoDB client based on environment
+const documentClient = new AWS.DynamoDB.DocumentClient(process.env.IS_LOCAL ? {
   endpoint: 'http://localhost:8000',
   region: 'local',
   credentials: {
     accessKeyId: 'local',
     secretAccessKey: 'local'
   }
-});
-const documentClient = DynamoDBDocumentClient.from(ddbClient);
+} : {});
 
-async function processCsvRow(row: any): Promise<void> {
-  try {
-    //parse the csv data into telemetry data type
-    const telemetryData: TelemetryData = {
-      droneId: row.drone_id,
-      timestamp: Date.parse(row.timestamp),
-      eventType: row.eventType,
-      status: row.status,
-      telemetryData: {
-        batteryLevel: parseFloat(row.batteryLevel),
-        location: row.location
-      }
-    };
+export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
 
-    // if (!validateTelemetryDataTypes(telemetryData) || !validateTelemetryData(telemetryData)) {
-    //   console.error('Invalid telemetry data:', telemetryData);
-    //   console.error('Invalid row data:', row);
-    //   return;
-    // }
+  return { statusCode: 200, body: '{Hello from Lambda!}' };
+  // try {
+  //   // Parse the incoming JSON body
+  //   const telemetryData = JSON.parse(event.body || '');
+  //   console.log('Received telemetry data:', JSON.stringify(telemetryData, null, 2));
 
-    //add only the valid telemetry data to the database
-    await documentClient.send(new PutCommand({
-      TableName: process.env.TABLE_NAME || 'LocalTestTable',
-      Item: {
-        ...telemetryData
-      }
-    }));
-  } catch (error) {
-    console.error('Error processing row:', row, error);
-  }
-}
+  //   // Validate data types first
+  //   if (!validateTelemetryDataTypes(telemetryData)) {
+  //     console.log('Failed type validation');
+  //     return {
+  //       statusCode: 400,
+  //       headers: {
+  //         'Content-Type': 'application/json'
+  //       },
+  //       body: JSON.stringify({ error: 'Invalid telemetry data types' })
+  //     };
+  //   }
 
-export const handler = async (event: any): Promise<any> {
-  try {
-    // Handle CSV file input
-    if (event.csvFilePath) {
-      console.log('Processing CSV file:', event.csvFilePath);
-      const fileContent = fs.readFileSync(event.csvFilePath, 'utf-8');
-      const records = parse(fileContent, {
-        columns: true,
-        skip_empty_lines: true
-      });
+  //   // Then validate the actual data
+  //   if (!validateTelemetryData(telemetryData)) {
+  //     console.log('Failed data validation');
+  //     return {
+  //       statusCode: 400,
+  //       headers: {
+  //         'Content-Type': 'application/json'
+  //       },
+  //       body: JSON.stringify({ error: 'Invalid telemetry data format' })
+  //     };
+  //   }
 
-      for (const row of records) {
-        await processCsvRow(row);
-      }
+  //   // Store in DynamoDB
+  //   await documentClient.put({
+  //     TableName: process.env.TABLE_NAME || 'LocalTable',
+  //     Item: {
+  //       ...telemetryData,
+  //       ttl: Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60 // 30 days retention
+  //     }
+  //   }).promise();
 
-      return {
-        statusCode: 200,
-        body: JSON.stringify({ message: 'CSV processing completed successfully' })
-      };
-    }
-
-    // Handle JSON input
-    if (event.body) {
-      const parsedData = typeof event.body === 'string' ? JSON.parse(event.body) : event.body;
-      
-      if (!validateTelemetryDataTypes(parsedData) || !validateTelemetryData(parsedData)) {
-        return {
-          statusCode: 400,
-          body: JSON.stringify({ error: 'Invalid telemetry data format' })
-        };
-      }
-
-      await documentClient.send(new PutCommand({
-        TableName: process.env.TABLE_NAME || 'LocalTestTable',
-        Item: parsedData
-      }));
-
-      return {
-        statusCode: 200,
-        body: JSON.stringify({ message: 'Telemetry data processed successfully' })
-      };
-    }
-
-    return {
-      statusCode: 400,
-      body: JSON.stringify({ error: 'No input provided' })
-    };
-  } catch (error) {
-    console.error('Error:', error);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: 'Internal server error' })
-    };
-  }
-}
+  //   return {
+  //     statusCode: 200,
+  //     headers: {
+  //       'Content-Type': 'application/json'
+  //     },
+  //     body: JSON.stringify({ 
+  //       message: 'Telemetry data processed successfully',
+  //       droneId: telemetryData.droneId
+  //     })
+  //   };
+  // } catch (error) {
+  //   console.error('Error processing telemetry data:', error);
+  //   return {
+  //     statusCode: 500,
+  //     headers: {
+  //       'Content-Type': 'application/json'
+  //     },
+  //     body: JSON.stringify({ error: String(error) })
+  //   };
+  // }
+};

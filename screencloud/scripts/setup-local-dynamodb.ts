@@ -7,7 +7,9 @@ async function createLocalTable() {
     credentials: {
       accessKeyId: 'local',
       secretAccessKey: 'local'
-    }
+    },
+    retryMode: 'standard',
+    maxAttempts: 3
   });
 
   // using docs from https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/getting-started-step-1.html 
@@ -16,9 +18,11 @@ async function createLocalTable() {
     TableName: 'LocalTable',
     KeySchema: [
       { AttributeName: 'droneId', KeyType: 'HASH' },
+      { AttributeName: 'timestamp', KeyType: 'RANGE' }
     ],
     AttributeDefinitions: [
-      { AttributeName: 'droneId', AttributeType: ScalarAttributeType.S } 
+      { AttributeName: 'droneId', AttributeType: ScalarAttributeType.S },
+      { AttributeName: 'timestamp', AttributeType: ScalarAttributeType.N }
     ],
     BillingMode: 'PAY_PER_REQUEST'
   });
@@ -31,6 +35,7 @@ async function createLocalTable() {
       console.log('Table already exists');
     } else {
       console.error('Error creating table:', error);
+      throw error;
     }
   }
 }

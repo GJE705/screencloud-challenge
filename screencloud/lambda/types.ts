@@ -3,8 +3,4 @@ export interface TelemetryData {
     timestamp: number;
     eventType: string;
     status: string;
-    telemetryData:{
-      batteryLevel: number;
-      location: string;
-    }
 }

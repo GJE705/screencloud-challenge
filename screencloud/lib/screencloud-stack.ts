@@ -2,6 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
+import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import * as path from 'path';
 
 export class ScreencloudStack extends cdk.Stack {
@@ -37,5 +38,17 @@ export class ScreencloudStack extends cdk.Stack {
 
     // Grant the Lambda function permissions to write to DynamoDB
     telemetryTable.grantWriteData(telemetryProcessor);
+
+    // Create API Gateway
+    const api = new apigateway.RestApi(this, 'TelemetryApi', {
+      restApiName: 'Drone Telemetry API',
+      description: 'API for processing drone telemetry data'
+    });
+
+    // Create API Gateway resource and method
+    const telemetry = api.root.addResource('telemetry');
+    telemetry.addMethod('POST', new apigateway.LambdaIntegration(telemetryProcessor, {
+      proxy: true
+    }));
   }
 }
