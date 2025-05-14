@@ -13,8 +13,8 @@ export function validateTelemetryDataTypes(data: any): data is TelemetryData {
 
 export function validateTelemetryData(data: TelemetryData): boolean {
  
-  if (data.droneId.length !== 8) {
-    console.log('Invalid droneId length');
+  if (!data.droneId.match(/^drone\d{3}$/)) {
+    console.log('Invalid droneId format. Must be in format: drone###');
     return false;
   }
 
@@ -28,9 +28,10 @@ export function validateTelemetryData(data: TelemetryData): boolean {
     return false;
   }
 
-  if(data.eventType !== 'FLIGHT' && data.eventType !== 'LANDING' && data.eventType !== 'LANDED' && data.eventType !== 'WARNING') {
-    console.log('Invalid eventType');
-    return false; 
+  const validEventTypes = ['TAKEOFF', 'FLYING', 'LANDING', 'LANDED', 'WARNING'];
+  if (!validEventTypes.includes(data.eventType)) {
+    console.log('Invalid eventType:', data.eventType);
+    return false;
   }
   
   if (data.status !== 'ACTIVE' && data.status !== 'INACTIVE') {

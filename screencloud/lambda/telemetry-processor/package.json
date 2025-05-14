@@ -1,0 +1,18 @@
+{
+  "name": "telemetry-processor",
+  "version": "1.0.0",
+  "description": "Lambda function for processing drone telemetry data",
+  "main": "process.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.1400.0"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.115",
+    "@types/node": "^18.0.0",
+    "typescript": "^5.0.0"
+  }
+}

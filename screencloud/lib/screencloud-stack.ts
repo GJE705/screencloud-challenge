@@ -16,7 +16,6 @@ export class ScreencloudStack extends cdk.Stack {
       timeToLiveAttribute: 'ttl',
     });
 
-    // Lambda function to process telemetry data from CSV
     const telemetryProcessor = new lambda.Function(this, 'TelemetryProcessor', {
       runtime: lambda.Runtime.NODEJS_18_X,
       handler: 'process.handler',
@@ -25,8 +24,42 @@ export class ScreencloudStack extends cdk.Stack {
           image: lambda.Runtime.NODEJS_18_X.bundlingImage,
           command: [
             'bash', '-c',
-            'npm install && cp -r node_modules /asset-output/ && cp process.ts /asset-output/'
+            'npm install && npm run build && mkdir -p /asset-output && cp -r dist/* /asset-output/ && cp package.json /asset-output/'
           ],
+          user: 'root'
+        },
+      }),
+      environment: {
+        TABLE_NAME: telemetryTable.tableName,
+      },
+      timeout: cdk.Duration.minutes(5),
+      memorySize: 512,
+    });
+
+    // Create API Gateway
+    const api = new apigateway.RestApi(this, 'TelemetryApi', {
+      restApiName: 'Drone Telemetry API',
+      description: 'API for processing drone telemetry data'
+    });
+
+    // Create API Gateway resource Post request to handler 
+    const telemetry = api.root.addResource('telemetry');
+    telemetry.addMethod('POST', new apigateway.LambdaIntegration(telemetryProcessor, {
+      proxy: true
+    }));
+
+    // Create the push to DB Lambda
+    const pushToDBLambda = new lambda.Function(this, 'PushToDBLambda', {
+      runtime: lambda.Runtime.NODEJS_18_X,
+      handler: 'pushToDBlambda.handler',
+      code: lambda.Code.fromAsset(path.join(__dirname, '../lambda/telemetry-processor'), {
+        bundling: {
+          image: lambda.Runtime.NODEJS_18_X.bundlingImage,
+          command: [
+            'bash', '-c',
+            'npm install && npm run build && mkdir -p /asset-output && cp -r dist/* /asset-output/ && cp package.json /asset-output/'
+          ],
+          user: 'root'
         },
       }),
       environment: {
@@ -37,17 +70,11 @@ export class ScreencloudStack extends cdk.Stack {
     });
 
     // Grant the Lambda function permissions to write to DynamoDB
-    telemetryTable.grantWriteData(telemetryProcessor);
+    telemetryTable.grantWriteData(pushToDBLambda);
 
-    // Create API Gateway
-    const api = new apigateway.RestApi(this, 'TelemetryApi', {
-      restApiName: 'Drone Telemetry API',
-      description: 'API for processing drone telemetry data'
-    });
-
-    // Create API Gateway resource and method
-    const telemetry = api.root.addResource('telemetry');
-    telemetry.addMethod('POST', new apigateway.LambdaIntegration(telemetryProcessor, {
+    // Add an endpoint for the push to DB Lambda
+    const pushToDB = api.root.addResource('push-to-db');
+    pushToDB.addMethod('POST', new apigateway.LambdaIntegration(pushToDBLambda, {
       proxy: true
     }));
   }

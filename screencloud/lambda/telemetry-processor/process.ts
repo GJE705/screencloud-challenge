@@ -1,67 +1,87 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { TelemetryData } from '../types';
-import { validateTelemetryData, validateTelemetryDataTypes } from '../validation';
+import { TelemetryData } from './types';
+import { validateTelemetryData, validateTelemetryDataTypes } from './validation';
 import AWS from 'aws-sdk';
 
-// Configure DynamoDB client based on environment
-const documentClient = new AWS.DynamoDB.DocumentClient(process.env.IS_LOCAL ? {
-  endpoint: 'http://localhost:8000',
-  region: 'local',
-  credentials: {
-    accessKeyId: 'local',
-    secretAccessKey: 'local'
-  }
-} : {});
-
 export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-
-  // return { statusCode: 200, body: '{Hello from Lambda!}' };
   try {
-    // Parse the incoming JSON body
-    const telemetryData = JSON.parse(event.body || '');
-    console.log('Received telemetry data:', JSON.stringify(telemetryData, null, 2));
-
-    // Validate data types first
-    if (!validateTelemetryDataTypes(telemetryData)) {
-      console.log('Failed type validation');
+    // Parse the incoming CSV data
+    console.log('Received event body:', event.body);
+    
+    if (!event.body) {
       return {
         statusCode: 400,
         headers: {
+
+
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ error: 'Invalid telemetry data types' })
+        body: JSON.stringify({ error: 'No data provided' })
       };
     }
 
-    // Then validate the actual data
-    if (!validateTelemetryData(telemetryData)) {
-      console.log('Failed data validation');
-      return {
-        statusCode: 400,
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ error: 'Invalid telemetry data format' })
-      };
+    const csvLines = event.body.split('\n');
+    console.log('CSV lines:', csvLines);
+
+    // Skip header row and empty lines
+    const dataRows = csvLines.slice(1).filter(line => line.trim());
+    console.log('Data rows:', dataRows);
+    
+    const results = {
+      successful: [] as TelemetryData[],
+      failed: [] as Array<{ row: string; error: string }>
+    };
+    
+    for (const row of dataRows) {
+      try {
+        const [droneId, timestamp, eventType, status, batteryLevel, location] = row.split(',').map(str => str.trim());
+        
+        const telemetryData: TelemetryData = {
+          droneId,
+          timestamp: parseInt(timestamp, 10),
+          eventType,
+          status,
+          telemetryData: {
+            batteryLevel: parseInt(batteryLevel, 10),
+            location
+          }
+        };
+
+        if (!validateTelemetryDataTypes(telemetryData)) {
+          console.log('Failed type validation for row:', row);
+          results.failed.push({ row, error: 'Invalid telemetry data types' });
+          continue;
+        }
+
+        if (!validateTelemetryData(telemetryData)) {
+          console.log('Failed data validation for row:', row);
+          results.failed.push({ row, error: 'Invalid telemetry data format' });
+          continue;
+        }
+
+        results.successful.push(telemetryData);
+      } catch (rowError) {
+        console.error('Error processing row:', row, rowError);
+        results.failed.push({ row, error: 'Row processing failed: ' + String(rowError) });
+      }
     }
 
-    // Store in DynamoDB
-    // await documentClient.put({
-    //   TableName: process.env.TABLE_NAME || 'LocalTable',
-    //   Item: {
-    //     ...telemetryData,
-    //     ttl: Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60 // 30 days retention
-    //   }
-    // }).promise();
+    //currently consuming the data as csv froma post request
+    //due to issue with dynamo im going to break up the lambda into two parts 
+    //this lambda will process the csv and validate the data
+    //the next lambda will take the data and put it into the db
+    // Store successful telemetry data in DynamoD
 
     return {
-      statusCode: 200,
+      statusCode: results.failed.length === 0 ? 200 : 207, 
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ 
-        message: 'Telemetry data processed successfully',
-        droneId: telemetryData.droneId
+      body: JSON.stringify({
+        message: `Processed ${dataRows.length} rows`,
+        successful: results.successful.length,
+        failed: results.failed.length,
+        details: results
       })
     };
   } catch (error) {

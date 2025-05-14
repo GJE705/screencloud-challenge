@@ -58,13 +58,13 @@ describe('validateTelemetryDataTypes', () => {
 
 describe('validateTelemetryData', () => {
     const baseData = {
-        droneId: 'ABCDEFGH',
+        droneId: 'drone001',
         timestamp: 1234567890,
-        eventType: 'FLIGHT',
+        eventType: 'TAKEOFF',
         status: 'ACTIVE',
         telemetryData: {
             batteryLevel: 50,
-            location: 'belfast '
+            location: 'belfast'
         }
     };
 

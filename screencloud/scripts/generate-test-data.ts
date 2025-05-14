@@ -27,9 +27,9 @@ for (let i = 0; i < 100; i++) {
 }
 
 // Write to CSV
-const csvContent = ['droneId,timestamp,eventType,status'];
+const csvContent = ['droneId,timestamp,eventType,status,batteryLevel,location'];
 data.forEach(record => {
-    csvContent.push(`${record.droneId},${record.timestamp},${record.eventType},${record.status}`);
+    csvContent.push(`${record.droneId},${record.timestamp},${record.eventType},${record.status},${record.telemetryData.batteryLevel},${record.telemetryData.location}`);
 });
 
 fs.writeFileSync(
