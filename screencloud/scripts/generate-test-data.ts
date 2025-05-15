@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { TelemetryData } from '../lambda/types';
+import { TelemetryData } from '../lambda/telemetry-processor/types';
 
 const baseDate = new Date('2025-05-14T08:00:00Z');
 const data: TelemetryData[] = [];

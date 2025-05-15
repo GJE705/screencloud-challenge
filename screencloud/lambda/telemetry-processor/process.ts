@@ -1,19 +1,85 @@
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
+import { APIGatewayProxyEvent, APIGatewayProxyResult, SQSEvent } from 'aws-lambda';
 import { TelemetryData } from './types';
 import { validateTelemetryData, validateTelemetryDataTypes } from './validation';
 import AWS from 'aws-sdk';
 
-export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+export const handler = async (event: SQSEvent | APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   try {
-    // Parse the incoming CSV data
-    console.log('Received event body:', event.body);
-    
+    // Check if this is an SQS event
+    if ('Records' in event) {
+      const results = {
+        successful: [] as TelemetryData[],
+        failed: [] as Array<{ row: string; error: string }>
+      };
+
+      for (const record of event.Records) {
+        try {
+          // Parse the CSV data from SQS message
+          const csvLines = record.body.split('\n');
+          console.log('CSV lines:', csvLines);
+
+          // Skip header row and empty lines
+          const dataRows = csvLines.slice(1).filter(line => line.trim());
+          console.log('Data rows:', dataRows);
+
+          for (const row of dataRows) {
+            try {
+              const [droneId, timestamp, eventType, status, batteryLevel, location] = row.split(',').map(str => str.trim());
+              
+              const telemetryData: TelemetryData = {
+                droneId,
+                timestamp: parseInt(timestamp, 10),
+                eventType,
+                status,
+                telemetryData: {
+                  batteryLevel: parseInt(batteryLevel, 10),
+                  location
+                }
+              };
+
+              if (!validateTelemetryDataTypes(telemetryData)) {
+                console.log('Failed type validation for row:', row);
+                results.failed.push({ row, error: 'Invalid telemetry data types' });
+                continue;
+              }
+
+              if (!validateTelemetryData(telemetryData)) {
+                console.log('Failed data validation for row:', row);
+                results.failed.push({ row, error: 'Invalid telemetry data format' });
+                continue;
+              }
+
+              results.successful.push(telemetryData);
+            } catch (rowError) {
+              console.error('Error processing row:', row, rowError);
+              results.failed.push({ row, error: 'Row processing failed: ' + String(rowError) });
+            }
+          }
+        } catch (recordError) {
+          console.error('Error processing SQS record:', recordError);
+          results.failed.push({ row: record.body, error: 'Record processing failed: ' + String(recordError) });
+        }
+      }
+
+      return {
+        statusCode: results.failed.length === 0 ? 200 : 207,
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          message: `Processed ${event.Records.length} messages`,
+          successful: results.successful.length,
+          failed: results.failed.length,
+          details: results
+        })
+      };
+    }
+
+    // Handle direct API Gateway requests (legacy support)
     if (!event.body) {
       return {
         statusCode: 400,
         headers: {
-
-
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({ error: 'No data provided' })
@@ -66,14 +132,8 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
       }
     }
 
-    //currently consuming the data as csv froma post request
-    //due to issue with dynamo im going to break up the lambda into two parts 
-    //this lambda will process the csv and validate the data
-    //the next lambda will take the data and put it into the db
-    // Store successful telemetry data in DynamoD
-
     return {
-      statusCode: results.failed.length === 0 ? 200 : 207, 
+      statusCode: results.failed.length === 0 ? 200 : 207,
       headers: {
         'Content-Type': 'application/json'
       },
@@ -84,6 +144,7 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
         details: results
       })
     };
+
   } catch (error) {
     console.error('Error processing telemetry data:', error);
     return {

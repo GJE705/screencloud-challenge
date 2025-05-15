@@ -1,0 +1,113 @@
+{
+	"info": {
+		"_postman_id": "debde14d-6dac-4e99-8601-36e4959a7970",
+		"name": "screencloud",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "30083874"
+	},
+	"item": [
+		{
+			"name": "telemetry",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "text/csv",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "droneId,timestamp,eventType,status,batteryLevel,location\ndrone001,1747209600000,TAKEOFF,ACTIVE,80,belfast\ndrone001,1747209660000,FLYING,ACTIVE,22,belfast\ndrone001,1747209720000,TAKEOFF,ACTIVE,49,belfast\ndrone001,1747209780000,WARNING,ACTIVE,59,belfast\ndrone001,1747209840000,LANDED,INACTIVE,92,belfast\ndrone001,1747209900000,WARNING,ACTIVE,32,belfast\ndrone001,1747209960000,TAKEOFF,ACTIVE,78,belfast\ndrone001,1747210020000,TAKEOFF,ACTIVE,68,belfast\ndrone001,1747210080000,LANDING,ACTIVE,12,belfast\ndrone001,1747210140000,TAKEOFF,ACTIVE,11,belfast\ndrone002,1747210200000,LANDING,ACTIVE,74,belfast\ndrone002,1747210260000,LANDING,ACTIVE,0,belfast\ndrone002,1747210320000,LANDING,ACTIVE,6,belfast\ndrone002,1747210380000,WARNING,ACTIVE,37,belfast\ndrone002,1747210440000,LANDING,ACTIVE,18,belfast\ndrone002,1747210500000,WARNING,ACTIVE,5,belfast",
+					"options": {
+						"raw": {
+							"language": "text"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/telemetry",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"telemetry"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "telemetry",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "text/csv",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "droneId,timestamp,eventType,status,batteryLevel,location\ndrone001,1747209600000,TAKEOFF,ACTIVE,80,belfast\ndrone001,1747209660000,FLYING,ACTIVE,22,belfast\ndrone001,1747209720000,TAKEOFF,ACTIVE,49,belfast\ndrone001,1747209780000,WARNING,ACTIVE,59,belfast\ndrone001,1747209840000,LANDED,INACTIVE,92,belfast\ndrone001,1747209900000,WARNING,ACTIVE,32,belfast\ndrone001,1747209960000,TAKEOFF,ACTIVE,78,belfast\ndrone001,1747210020000,TAKEOFF,ACTIVE,68,belfast\ndrone001,1747210080000,LANDING,ACTIVE,12,belfast\ndrone001,1747210140000,TAKEOFF,ACTIVE,11,belfast\ndrone002,1747210200000,LANDING,ACTIVE,74,belfast\ndrone002,1747210260000,LANDING,ACTIVE,0,belfast\ndrone002,1747210320000,LANDING,ACTIVE,6,belfast\ndrone002,1747210380000,WARNING,ACTIVE,37,belfast\ndrone002,1747210440000,LANDING,ACTIVE,18,belfast\ndrone002,1747210500000,WARNING,ACTIVE,5,belfast",
+							"options": {
+								"raw": {
+									"language": "text"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/telemetry",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"telemetry"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "2433"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"981-w9+6DP7dW1W5+XuQL5cIr0MA5ks\""
+						},
+						{
+							"key": "Date",
+							"value": "Thu, 15 May 2025 07:31:04 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Processed 1 messages\",\n    \"successful\": 16,\n    \"failed\": 0,\n    \"details\": {\n        \"successful\": [\n            {\n                \"droneId\": \"drone001\",\n                \"timestamp\": 1747209600000,\n                \"eventType\": \"TAKEOFF\",\n                \"status\": \"ACTIVE\",\n                \"telemetryData\": {\n                    \"batteryLevel\": 80,\n                    \"location\": \"belfast\"\n                }\n            },\n            {\n                \"droneId\": \"drone001\",\n                \"timestamp\": 1747209660000,\n                \"eventType\": \"FLYING\",\n                \"status\": \"ACTIVE\",\n                \"telemetryData\": {\n                    \"batteryLevel\": 22,\n                    \"location\": \"belfast\"\n                }\n            },\n            {\n                \"droneId\": \"drone001\",\n                \"timestamp\": 1747209720000,\n                \"eventType\": \"TAKEOFF\",\n                \"status\": \"ACTIVE\",\n                \"telemetryData\": {\n                    \"batteryLevel\": 49,\n                    \"location\": \"belfast\"\n                }\n            },\n            {\n                \"droneId\": \"drone001\",\n                \"timestamp\": 1747209780000,\n                \"eventType\": \"WARNING\",\n                \"status\": \"ACTIVE\",\n                \"telemetryData\": {\n                    \"batteryLevel\": 59,\n                    \"location\": \"belfast\"\n                }\n            },\n            {\n                \"droneId\": \"drone001\",\n                \"timestamp\": 1747209840000,\n                \"eventType\": \"LANDED\",\n                \"status\": \"INACTIVE\",\n                \"telemetryData\": {\n                    \"batteryLevel\": 92,\n                    \"location\": \"belfast\"\n                }\n            },\n            {\n                \"droneId\": \"drone001\",\n                \"timestamp\": 1747209900000,\n                \"eventType\": \"WARNING\",\n                \"status\": \"ACTIVE\",\n                \"telemetryData\": {\n                    \"batteryLevel\": 32,\n                    \"location\": \"belfast\"\n                }\n            },\n            {\n                \"droneId\": \"drone001\",\n                \"timestamp\": 1747209960000,\n                \"eventType\": \"TAKEOFF\",\n                \"status\": \"ACTIVE\",\n                \"telemetryData\": {\n                    \"batteryLevel\": 78,\n                    \"location\": \"belfast\"\n                }\n            },\n            {\n                \"droneId\": \"drone001\",\n                \"timestamp\": 1747210020000,\n                \"eventType\": \"TAKEOFF\",\n                \"status\": \"ACTIVE\",\n                \"telemetryData\": {\n                    \"batteryLevel\": 68,\n                    \"location\": \"belfast\"\n                }\n            },\n            {\n                \"droneId\": \"drone001\",\n                \"timestamp\": 1747210080000,\n                \"eventType\": \"LANDING\",\n                \"status\": \"ACTIVE\",\n                \"telemetryData\": {\n                    \"batteryLevel\": 12,\n                    \"location\": \"belfast\"\n                }\n            },\n            {\n                \"droneId\": \"drone001\",\n                \"timestamp\": 1747210140000,\n                \"eventType\": \"TAKEOFF\",\n                \"status\": \"ACTIVE\",\n                \"telemetryData\": {\n                    \"batteryLevel\": 11,\n                    \"location\": \"belfast\"\n                }\n            },\n            {\n                \"droneId\": \"drone002\",\n                \"timestamp\": 1747210200000,\n                \"eventType\": \"LANDING\",\n                \"status\": \"ACTIVE\",\n                \"telemetryData\": {\n                    \"batteryLevel\": 74,\n                    \"location\": \"belfast\"\n                }\n            },\n            {\n                \"droneId\": \"drone002\",\n                \"timestamp\": 1747210260000,\n                \"eventType\": \"LANDING\",\n                \"status\": \"ACTIVE\",\n                \"telemetryData\": {\n                    \"batteryLevel\": 0,\n                    \"location\": \"belfast\"\n                }\n            },\n            {\n                \"droneId\": \"drone002\",\n                \"timestamp\": 1747210320000,\n                \"eventType\": \"LANDING\",\n                \"status\": \"ACTIVE\",\n                \"telemetryData\": {\n                    \"batteryLevel\": 6,\n                    \"location\": \"belfast\"\n                }\n            },\n            {\n                \"droneId\": \"drone002\",\n                \"timestamp\": 1747210380000,\n                \"eventType\": \"WARNING\",\n                \"status\": \"ACTIVE\",\n                \"telemetryData\": {\n                    \"batteryLevel\": 37,\n                    \"location\": \"belfast\"\n                }\n            },\n            {\n                \"droneId\": \"drone002\",\n                \"timestamp\": 1747210440000,\n                \"eventType\": \"LANDING\",\n                \"status\": \"ACTIVE\",\n                \"telemetryData\": {\n                    \"batteryLevel\": 18,\n                    \"location\": \"belfast\"\n                }\n            },\n            {\n                \"droneId\": \"drone002\",\n                \"timestamp\": 1747210500000,\n                \"eventType\": \"WARNING\",\n                \"status\": \"ACTIVE\",\n                \"telemetryData\": {\n                    \"batteryLevel\": 5,\n                    \"location\": \"belfast\"\n                }\n            }\n        ],\n        \"failed\": []\n    }\n}"
+				}
+			]
+		}
+	]
+}

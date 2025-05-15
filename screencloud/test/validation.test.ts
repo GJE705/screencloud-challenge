@@ -1,4 +1,4 @@
-import { validateTelemetryDataTypes, validateTelemetryData } from '../lambda/validation';
+import { validateTelemetryDataTypes, validateTelemetryData } from '../lambda/telemetry-processor/validation';
 
 describe('validateTelemetryDataTypes', () => {
     it('should return true for valid types', () => {

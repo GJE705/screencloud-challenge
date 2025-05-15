@@ -1,0 +1,5 @@
+{
+  "devDependencies": {
+    "aws-lambda-local": "^2.0.6"
+  }
+}

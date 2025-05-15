@@ -13,6 +13,8 @@ This project implements a serverless application using AWS Lambda and DynamoDB t
    - Processes and transforms it into JSON format
 3. Valid rows are stored in the dynamoDB table and can be quried quickly 
 
+![alt text](image.png)
+
 ### Technical Stack
 
 - **Architecture:** AWS Serverless
@@ -75,6 +77,7 @@ This project implements a serverless application using AWS Lambda and DynamoDB t
 While AWS Step Functions was initially considered as a potential solution, the decision was made to focus on Lambda functions due to my experience and simplicity of implementation.
 
 I also wanted to use dynamo as I thought it would be most suitable to store the telemetry data, especially when querying. Dynamo also supports streaming events which I believe to be a good solution to this  problem. eg events could be triggered based ona particular item changing in the telemetry data 
+
 
 
 

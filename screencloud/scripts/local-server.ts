@@ -1,6 +1,6 @@
 import express from 'express';
 import { handler } from '../lambda/telemetry-processor/process';
-import { APIGatewayProxyEvent } from 'aws-lambda';
+import { APIGatewayProxyEvent, SQSEvent } from 'aws-lambda';
 
 // Set environment variables for local development
 process.env.IS_LOCAL = 'true';
@@ -23,6 +23,26 @@ app.post('/telemetry', async (req, res) => {
             body: req.body,
             contentType: req.get('Content-Type')
         });
+
+        // Simulate SQS event
+        const sqsEvent: SQSEvent = {
+            Records: [{
+                messageId: 'local-message-id',
+                receiptHandle: 'local-receipt-handle',
+                body: typeof req.body === 'string' ? req.body : JSON.stringify(req.body),
+                attributes: {
+                    ApproximateReceiveCount: '1',
+                    SentTimestamp: Date.now().toString(),
+                    SenderId: 'local-sender',
+                    ApproximateFirstReceiveTimestamp: Date.now().toString()
+                },
+                messageAttributes: {},
+                md5OfBody: 'local-md5',
+                eventSource: 'aws:sqs',
+                eventSourceARN: 'arn:aws:sqs:local:000000000000:LocalQueue',
+                awsRegion: 'local'
+            }]
+        };
         
         // Create an API Gateway event from the Express request
         const event: APIGatewayProxyEvent = {
@@ -74,10 +94,14 @@ app.post('/telemetry', async (req, res) => {
         process.env.TABLE_NAME = 'LocalTable';
 
         // Call the Lambda handler
-        const result = await handler(event);
+        // Try SQS event first, fallback to direct API Gateway event
+        const result = await handler(sqsEvent);
 
         // Send the response
         res.status(result.statusCode).set(result.headers).send(result.body);
+
+        // Log success message
+        console.log('Successfully processed message through SQS simulation');
     } catch (error) {
         console.error('Error processing request:', error);
         res.status(500).json({ error: 'Internal Server Error' });
