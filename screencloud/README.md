@@ -7,24 +7,23 @@ This project implements a serverless application using AWS Lambda and DynamoDB t
 
 ### Architecture Flow
 
-1. Drone events trigger a Lambda function
-2. The Lambda function:
-   - Validates incoming drone data
+1. requests sent to API GW
+2. events added to SQS queue
+3. The process lambda function:
+   - Validates incoming drone data from the sqs queue
    - Processes and transforms it into JSON format
-3. Valid rows are stored in the dynamoDB table and can be quried quickly 
+4. Valid rows are stored in the dynamoDB table and can be queried quickly 
 
 ![alt text](image.png)
 
 ### Technical Stack
 
-- **Architecture:** AWS Serverless
+- **Architecture:** AWS Serverless, API GW, SQS, DynamoDB, Lambda 
 - **Language:** TypeScript
 - **Database:** DynamoDB
 - **Local Development:** Docker and Express 
-- **Testing:** Test-Driven Development approach
+- **Testing:** Test-Driven Development approach, JEST
 - **Infrastructure:** AWS CDK
-
-## Getting Started
 
 ### Prerequisites
 
@@ -78,13 +77,13 @@ While AWS Step Functions was initially considered as a potential solution, the d
 
 I also wanted to use dynamo as I thought it would be most suitable to store the telemetry data, especially when querying. Dynamo also supports streaming events which I believe to be a good solution to this  problem. eg events could be triggered based ona particular item changing in the telemetry data 
 
-
+I added an sqs queue for the lambda to poll events from, this was to improve traffic management, and scalability, it would also help with error handling in the future 
 
 
 ### Challenges and Learnings
 
-I was having trouble with the lambda> dynamo call locally due to security tokens in docker, I set up a express sever to run locally so that i could hit the POST endpoint for testing
 
+I was having trouble with the lambda to dynamo call locally due to security tokens in docker, I set up a express sever to run locally so that I could hit the POST endpoint for testing
 The main challenge encountered was setting up DynamoDB for local development:
 - Successfully configured local DynamoDB using Docker
 - Faced difficulties integrating the process Lambda with the local DynamoDB container for testing
@@ -100,6 +99,6 @@ and prepare it for sending to dynamo
 
 
 Learnings
-A change in tech stack can bring with it some upskilling opportunities, however this challenge helped me realise potential gaps in my knowledge for me to improve on. 
+A change in tech stack can bring with it some upskilling opportunities, however this challenge helped me identify areas for me to improve on. 
 
-In my experience we have always ran the api stack remotely I have learned about the additional setup required for backend local dveelopment 
+In my experience we have always ran the api stack remotely I have learned the initial configuration for local containerisation can be difficult to establish 

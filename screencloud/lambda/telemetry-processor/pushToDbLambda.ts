@@ -8,6 +8,9 @@ const config = process.env.IS_LOCAL ? {
   endpoint: 'http://localhost:8000'
 } : { region: 'eu-west-1' };
 
+
+
+
 const documentClient = new AWS.DynamoDB.DocumentClient(config);
 
 export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {

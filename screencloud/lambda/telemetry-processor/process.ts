@@ -132,6 +132,14 @@ export const handler = async (event: SQSEvent | APIGatewayProxyEvent): Promise<A
       }
     }
 
+
+  // Due to issues with my local DynamoDB setup, I had to split the database interaction code into a separate Lambda function.
+// Ideally, I would have handled the database operations within this Lambda, but I encountered authorization errors 
+// with the Docker container for DynamoDB that I couldn't resolve. 
+// My plan was to trigger the "push to DB" Lambda with the telemetry data contained in the 'successful' array.
+//due to time the pushToDBLambda function is not in a working state ,
+
+
     return {
       statusCode: results.failed.length === 0 ? 200 : 207,
       headers: {
